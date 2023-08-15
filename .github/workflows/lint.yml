@@ -1,0 +1,40 @@
+name: lint
+
+on:
+  workflow_call:
+    inputs:
+      timeout_minutes:
+        required: false
+        type: number
+        default: 30
+
+env:
+  SHELL: /bin/bash
+  SCCACHE_GHA_ENABLED: "true"
+  RUSTC_WRAPPER: "sccache"
+
+jobs:
+  main:
+    timeout-minutes: ${{ inputs.timeout_minutes }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: ./.github/actions/build-setup
+
+      - name: Run sccache-cache
+        uses: mozilla-actions/sccache-action@v0.0.3
+
+      - name: cargo lint
+        shell: bash
+        run: cargo x lint
+
+      - name: cargo clippy
+        shell: bash
+        run: cargo xclippy --workspace --all-targets
+
+      - name: cargo fmt
+        shell: bash
+        run: cargo xfmt --check
+
+      - uses: ./.github/actions/build-teardown

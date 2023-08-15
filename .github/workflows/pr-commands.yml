@@ -57,9 +57,7 @@ jobs:
   check-lint:
     needs: entrypoint
     if: ${{ needs.entrypoint.outputs.command == '!check-lint' }}
-    runs-on: ubuntu-latest
-    steps:
-      - run: echo hello
+    uses: ./.github/workflows/lint.yml
 
   check-pre-merge:
     needs: entrypoint
