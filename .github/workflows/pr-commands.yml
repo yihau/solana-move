@@ -1,0 +1,57 @@
+name: PR commands
+
+on:
+  issue_comment:
+    types:
+      - created
+
+jobs:
+  entrypoint:
+    if: ${{ github.event.issue.pull_request }}
+    runs-on: ubuntu-latest
+    outputs:
+      command: ${{ steps.parse_command.outputs.command }}
+    steps:
+      - name: check auth
+        id: check_auth
+        run: |
+          # github handles
+          allowlist=(
+            "yihau"
+            "ksolana"
+          )
+          if [[ " ${allowlist[*]} " =~ " ${{github.event.sender.login}} " ]]; then
+            echo "pass=1" >> "$GITHUB_OUTPUT"
+          fi
+      - name: parse command
+        if: ${{ steps.check_auth.outputs.pass == 1 }}
+        id: parse_command
+        run: echo "command=${{ github.event.comment.body }}" >> "$GITHUB_OUTPUT"
+
+  help:
+    needs: entrypoint
+    if: ${{ needs.entrypoint.outputs.command == '!help' }}
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo hello
+
+  check-lint:
+    needs: entrypoint
+    if: ${{ needs.entrypoint.outputs.command == '!check-lint' }}
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo hello
+
+  check-pre-merge:
+    needs: entrypoint
+    if: ${{ needs.entrypoint.outputs.command == '!check-pre-merge' }}
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo hello
+
+  format-code:
+    needs: entrypoint
+    if: ${{ needs.entrypoint.outputs.command == '!format-cod' }}
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo hello
