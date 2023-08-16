@@ -35,7 +35,6 @@ Flags:
     With no options script behaves like -tcg is given.
     If you want to run tests in release mode, call this script as 'BUILD_FLAGS=-release <script>'.
 
-
 EOF
       exit 1
       ;;
