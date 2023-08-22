@@ -1,0 +1,25 @@
+name: Add PR Links
+
+on:
+  pull_request:
+    types:
+      - opened
+
+jobs:
+  main:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - shell: bash
+        run: |
+          pr_num="${{ github.event.pull_request.number }}"
+          gh pr checkout "$pr_num"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config user.name "github-actions[bot]"
+          git commit --allow-empty -m "AUTO GENERATED (#$pr_num)"
+
+          GIT_SEQUENCE_EDITOR="./.github/scripts/mv-commit-to-head.sh" git rebase -i ${{ github.event.pull_request.base.sha }}
+          git push -f
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
