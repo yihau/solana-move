@@ -13,6 +13,8 @@ jobs:
 
       - shell: bash
         run: |
+          set -x
+
           pr_num="${{ github.event.pull_request.number }}"
           gh pr checkout "$pr_num"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -20,6 +22,8 @@ jobs:
           git commit --allow-empty -m "AUTO GENERATED (#$pr_num)"
 
           GIT_SEQUENCE_EDITOR="./.github/scripts/mv-commit-to-head.sh" git rebase -i ${{ github.event.pull_request.base.sha }}
-          git push -f
+
+
+          git push -f origin
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
