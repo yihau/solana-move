@@ -13,20 +13,19 @@ jobs:
 
       - shell: bash
         run: |
+          # XXX
           set -x
 
           pr_num="${{ github.event.pull_request.number }}"
           gh pr checkout "$pr_num"
+
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git config user.name "github-actions[bot]"
           git commit --allow-empty -m "AUTO GENERATED (#$pr_num)"
 
-          git log --oneline -10 | cat
+          the_first_commit_of_pr=$(gh pr view --json commits "$pr_num" | jq '.commits[0].oid' | tr -d '"')
+          GIT_SEQUENCE_EDITOR="./.github/scripts/mv-commit-to-head.sh" git rebase -i ${the_first_commit_of_pr}^
 
-          echo "${{ toJSON(github) }}"
-
-          GIT_SEQUENCE_EDITOR="./.github/scripts/mv-commit-to-head.sh" git rebase -i ${{ github.event.pull_request.base.sha }}
-
-          git push -f origin
+          git push -f
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
