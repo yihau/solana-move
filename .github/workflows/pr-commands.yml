@@ -84,7 +84,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git show -s --format=%B > "git_message"
           echo $'\nRevision: https://github.com/solana-labs/move/pull/'"$pr_num" >> "git_message"
-          git commit --amend -F "git_message"
+          git commit --amend --allow-empty -F "git_message"
           git push -f
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
