@@ -17,22 +17,22 @@ jobs:
         run: |
           set -x # XXX
 
-          pr_num="${{ github.event.pull_request.number }}"
-          gh pr checkout "$pr_num"
+          #pr_num="${{ github.event.pull_request.number }}"
+          #gh pr checkout "$pr_num"
 
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git config user.name "github-actions[bot]"
 
           git commit --allow-empty -m "AUTO GENERATED (#$pr_num)"
 
-          cat <<'EOF' > /tmp/mv-commit-to-head.sh
-            #!/usr/bin/env bash
-            sed -i '/AUTO GENERATED/!H;/AUTO GENERATED/{x;H};$!d;$x' $1
-          EOF
-          chmod +x /tmp/mv-commit-to-head.sh
+          #cat <<'EOF' > /tmp/mv-commit-to-head.sh
+          #  #!/usr/bin/env bash
+          #  sed -i '/AUTO GENERATED/!H;/AUTO GENERATED/{x;H};$!d;$x' $1
+          #EOF
+          #chmod +x /tmp/mv-commit-to-head.sh
 
-          the_first_commit_of_pr=$(gh pr view --json commits "$pr_num" | jq '.commits[0].oid' | tr -d '"')
-          GIT_SEQUENCE_EDITOR="/tmp/mv-commit-to-head.sh" git rebase -i ${the_first_commit_of_pr}^
+          #the_first_commit_of_pr=$(gh pr view --json commits "$pr_num" | jq '.commits[0].oid' | tr -d '"')
+          #GIT_SEQUENCE_EDITOR="/tmp/mv-commit-to-head.sh" git rebase -i ${the_first_commit_of_pr}^
 
           git push -f
         env:
