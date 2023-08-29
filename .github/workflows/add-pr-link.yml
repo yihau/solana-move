@@ -1,7 +1,7 @@
 name: Add PR Links
 
 on:
-  pull_request:
+  pull_request_target:
     types:
       - opened
       - reopened # XXX
@@ -23,22 +23,17 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git config user.name "github-actions[bot]"
 
-          git show -s --format=%B > "git_message"
-          echo $'\nRevision: https://github.com/solana-labs/move/pull/'"$pr_num" >> "git_message"
-          git commit --amend --allow-empty -F "git_message"
+          git commit --allow-empty -m "AUTO GENERATED (#$pr_num)"
+
+          cat <<'EOF' > /tmp/mv-commit-to-head.sh
+            #!/usr/bin/env bash
+            sed -i '/AUTO GENERATED/!H;/AUTO GENERATED/{x;H};$!d;$x' $1
+          EOF
+          chmod +x /tmp/mv-commit-to-head.sh
+
+          the_first_commit_of_pr=$(gh pr view --json commits "$pr_num" | jq '.commits[0].oid' | tr -d '"')
+          GIT_SEQUENCE_EDITOR="/tmp/mv-commit-to-head.sh" git rebase -i ${the_first_commit_of_pr}^
+
           git push -f
-
-          # git commit --allow-empty -m "AUTO GENERATED (#$pr_num)"
-
-          # cat <<'EOF' > /tmp/mv-commit-to-head.sh
-          #   #!/usr/bin/env bash
-          #   sed -i '/AUTO GENERATED/!H;/AUTO GENERATED/{x;H};$!d;$x' $1
-          # EOF
-          # chmod +x /tmp/mv-commit-to-head.sh
-
-          # the_first_commit_of_pr=$(gh pr view --json commits "$pr_num" | jq '.commits[0].oid' | tr -d '"')
-          # GIT_SEQUENCE_EDITOR="/tmp/mv-commit-to-head.sh" git rebase -i ${the_first_commit_of_pr}^
-
-          # git push -f
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
