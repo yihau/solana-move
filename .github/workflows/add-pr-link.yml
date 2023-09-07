@@ -17,8 +17,8 @@ jobs:
         run: |
           gh pr checkout "$PR_NUMBER"
 
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git config user.name "github-actions[bot]"
+          git config user.email "yihau.chen@solana.com"
+          git config user.name "chidocibot"
 
           git commit --allow-empty -m "AUTO GENERATED (#$PR_NUMBER)"
 
